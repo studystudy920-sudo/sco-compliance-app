@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SCO学習 - シニア・コンプライアンス・オフィサー</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f3;--bg-card:#ffffff;--bg-nav:#1a1a2e;
+  --text:#2c2c2c;--text-light:#6b6b6b;--text-inv:#f0ece4;
+  --accent:#3d5a80;--accent-light:#5b7faa;--accent-subtle:rgba(61,90,128,0.08);
+  --success:#4a7c59;--success-bg:rgba(74,124,89,0.1);
+  --error:#a0413a;--error-bg:rgba(160,65,58,0.1);
+  --border:#e2dfd8;--shadow:0 1px 3px rgba(0,0,0,0.06);
+  --radius:10px;--radius-lg:16px;
+  --font-body:'Noto Sans JP',sans-serif;
+  --font-display:'Source Serif 4',serif;
+  --transition:0.25s cubic-bezier(0.4,0,0.2,1);
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);color:var(--text);background:var(--bg);
+  min-height:100dvh;display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+/* ===== Bottom Nav ===== */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--bg-nav);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+  box-shadow:0 -2px 20px rgba(0,0,0,0.15);
+}
+.nav-btn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 16px;color:rgba(240,236,228,0.5);
+  font-size:10px;font-weight:500;letter-spacing:0.02em;
+  transition:color var(--transition);position:relative;
+}
+.nav-btn.active{color:var(--text-inv)}
+.nav-btn.active::before{
+  content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  width:24px;height:3px;background:var(--accent-light);border-radius:2px;
+}
+.nav-btn svg{width:22px;height:22px;transition:transform var(--transition)}
+.nav-btn.active svg{transform:scale(1.1)}
+/* ===== Main ===== */
+main{
+  flex:1;padding:16px 16px 90px;max-width:480px;
+  width:100%;margin:0 auto;
+}
+/* ===== Header ===== */
+.page-header{
+  text-align:center;padding:20px 0 16px;
+}
+.page-header h1{
+  font-family:var(--font-display);font-size:1.4rem;font-weight:600;
+  color:var(--bg-nav);letter-spacing:0.03em;
+}
+.page-header p{font-size:0.8rem;color:var(--text-light);margin-top:4px}
+/* ===== Cards ===== */
+.card{
+  background:var(--bg-card);border-radius:var(--radius-lg);
+  padding:20px;margin-bottom:14px;box-shadow:var(--shadow);
+  border:1px solid var(--border);transition:transform var(--transition);
+}
+.card:active{transform:scale(0.985)}
+/* ===== Home ===== */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stat-card{
+  background:var(--bg-card);border-radius:var(--radius);padding:16px;
+  text-align:center;box-shadow:var(--shadow);border:1px solid var(--border);
+}
+.stat-num{
+  font-family:var(--font-display);font-size:1.8rem;font-weight:600;
+  color:var(--accent);line-height:1;
+}
+.stat-label{font-size:0.72rem;color:var(--text-light);margin-top:6px;font-weight:500}
+.menu-item{
+  display:flex;align-items:center;gap:14px;padding:16px;
+  background:var(--bg-card);border-radius:var(--radius);margin-bottom:10px;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+  transition:all var(--transition);
+}
+.menu-item:active{background:var(--accent-subtle)}
+.menu-icon{
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.menu-icon.quiz{background:rgba(61,90,128,0.1);color:var(--accent)}
+.menu-icon.flash{background:rgba(74,124,89,0.1);color:var(--success)}
+.menu-icon.review{background:rgba(160,65,58,0.1);color:var(--error)}
+.menu-icon svg{width:22px;height:22px}
+.menu-text h3{font-size:0.92rem;font-weight:600;margin-bottom:2px}
+.menu-text p{font-size:0.75rem;color:var(--text-light)}
+.menu-arrow{margin-left:auto;color:var(--text-light);font-size:1.2rem}
+/* ===== Quiz ===== */
+.quiz-progress{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.quiz-progress-bar{
+  flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;
+}
+.quiz-progress-fill{
+  height:100%;background:var(--accent);border-radius:2px;
+  transition:width 0.4s ease;
+}
+.quiz-count{font-size:0.78rem;color:var(--text-light);font-weight:500;white-space:nowrap}
+.question-card{
+  background:var(--bg-card);border-radius:var(--radius-lg);
+  padding:24px 20px;margin-bottom:16px;box-shadow:var(--shadow);
+  border:1px solid var(--border);
+}
+.q-category{
+  font-size:0.7rem;color:var(--accent);font-weight:600;
+  text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;
+}
+.q-text{font-size:0.95rem;line-height:1.7;font-weight:400}
+.choices{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.choice-btn{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;background:var(--bg-card);border-radius:var(--radius);
+  border:1.5px solid var(--border);text-align:left;
+  font-size:0.88rem;line-height:1.6;transition:all var(--transition);
+}
+.choice-btn:active{border-color:var(--accent)}
+.choice-num{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:600;position:relative;
+  border:1.5px solid var(--border);color:var(--text-light);
+  transition:all var(--transition);margin-top:1px;
+}
+.choice-btn.correct{border-color:var(--success);background:var(--success-bg)}
+.choice-btn.correct .choice-num{border-color:var(--success);background:var(--success);color:#fff}
+.choice-btn.wrong{border-color:var(--error);background:var(--error-bg)}
+.choice-btn.wrong .choice-num{border-color:var(--error);background:var(--error);color:#fff}
+.choice-btn.disabled{pointer-events:none;opacity:0.6}
+.choice-btn.correct.disabled,.choice-btn.wrong.disabled{opacity:1}
+.explanation{
+  background:var(--accent-subtle);border-radius:var(--radius);
+  padding:16px;margin-bottom:16px;font-size:0.85rem;line-height:1.7;
+  border-left:3px solid var(--accent);
+  animation:fadeUp 0.3s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.next-btn,.start-btn{
+  width:100%;padding:14px;background:var(--accent);color:#fff;
+  border-radius:var(--radius);font-size:0.92rem;font-weight:600;
+  transition:all var(--transition);letter-spacing:0.02em;
+}
+.next-btn:active,.start-btn:active{background:var(--accent-light);transform:scale(0.98)}
+/* ===== Flashcard ===== */
+.flashcard-container{perspective:1000px;margin-bottom:16px}
+.flashcard{
+  width:100%;min-height:220px;position:relative;
+  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  transform-style:preserve-3d;cursor:pointer;
+}
+.flashcard.flipped{transform:rotateY(180deg)}
+.flash-face{
+  position:absolute;inset:0;backface-visibility:hidden;
+  background:var(--bg-card);border-radius:var(--radius-lg);
+  padding:28px 24px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+}
+.flash-back{transform:rotateY(180deg)}
+.flash-label{
+  font-size:0.7rem;color:var(--accent);font-weight:600;
+  text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;
+}
+.flash-term{font-size:1.1rem;font-weight:600;line-height:1.6}
+.flash-def{font-size:0.9rem;line-height:1.7;color:var(--text)}
+.flash-hint{font-size:0.72rem;color:var(--text-light);margin-top:14px}
+.flash-nav{display:flex;gap:10px}
+.flash-nav button{
+  flex:1;padding:12px;border-radius:var(--radius);
+  font-size:0.88rem;font-weight:600;transition:all var(--transition);
+}
+.flash-prev{background:var(--bg-card);color:var(--text);border:1.5px solid var(--border)}
+.flash-next{background:var(--accent);color:#fff}
+.flash-counter{
+  text-align:center;font-size:0.8rem;color:var(--text-light);
+  margin-bottom:12px;font-weight:500;
+}
+/* ===== Review ===== */
+.empty-state{
+  text-align:center;padding:48px 20px;
+}
+.empty-state svg{width:56px;height:56px;color:var(--border);margin-bottom:16px}
+.empty-state h3{font-size:1rem;font-weight:600;margin-bottom:6px}
+.empty-state p{font-size:0.82rem;color:var(--text-light);line-height:1.6}
+.review-item{
+  padding:14px 16px;background:var(--bg-card);border-radius:var(--radius);
+  margin-bottom:10px;box-shadow:var(--shadow);border:1px solid var(--border);
+}
+.review-item .q{font-size:0.85rem;line-height:1.6;margin-bottom:6px}
+.review-item .a{font-size:0.78rem;color:var(--success);font-weight:500}
+.review-item .wrong-a{font-size:0.78rem;color:var(--error);margin-bottom:2px}
+.review-item .review-mastery{
+  font-size:0.73rem;color:var(--accent);font-weight:500;
+  margin-top:6px;padding-top:6px;border-top:1px solid var(--border);
+  letter-spacing:0.02em;
+}
+/* ===== Progress ===== */
+.progress-ring-wrap{
+  display:flex;justify-content:center;margin:20px 0;
+}
+.progress-ring{position:relative;width:160px;height:160px}
+.progress-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.progress-ring circle{fill:none;stroke-width:10}
+.progress-ring .bg{stroke:var(--border)}
+.progress-ring .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 0.6s ease}
+.progress-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.progress-pct{font-family:var(--font-display);font-size:2.2rem;font-weight:600;color:var(--accent)}
+.progress-label{font-size:0.72rem;color:var(--text-light);margin-top:2px}
+.history-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;background:var(--bg-card);border-radius:var(--radius);
+  margin-bottom:8px;box-shadow:var(--shadow);border:1px solid var(--border);
+  font-size:0.82rem;
+}
+.history-date{color:var(--text-light);font-size:0.75rem}
+.history-score{font-weight:600;color:var(--accent)}
+.section-title{
+  font-size:0.82rem;font-weight:600;color:var(--text-light);
+  margin:20px 0 10px;letter-spacing:0.03em;
+}
+.reset-btn{
+  width:100%;padding:12px;margin-top:16px;
+  background:none;border:1.5px solid var(--error);color:var(--error);
+  border-radius:var(--radius);font-size:0.85rem;font-weight:600;
+  transition:all var(--transition);
+}
+.reset-btn:active{background:var(--error-bg)}
+/* ===== Export / Import Buttons ===== */
+.data-btn-group{display:flex;gap:10px;margin-top:20px}
+.data-btn{
+  flex:1;padding:12px;border-radius:var(--radius);
+  font-size:0.85rem;font-weight:600;transition:all var(--transition);
+  letter-spacing:0.02em;text-align:center;
+}
+.data-btn:active{transform:scale(0.98)}
+.data-btn.export{background:var(--accent);color:#fff}
+.data-btn.export:active{background:var(--accent-light)}
+.data-btn.import{background:var(--bg-card);color:var(--accent);border:1.5px solid var(--accent)}
+/* ===== Screens ===== */
+.screen{display:none;animation:fadeUp 0.3s ease}
+.screen.active{display:block}
+/* ===== Utilities ===== */
+.mb-8{margin-bottom:8px}
+.mb-16{margin-bottom:16px}
+/* ===== Quiz Result ===== */
+.result-card{text-align:center;padding:32px 20px}
+.result-score{
+  font-family:var(--font-display);font-size:3rem;font-weight:600;
+  color:var(--accent);line-height:1;
+}
+.result-label{font-size:0.85rem;color:var(--text-light);margin:6px 0 16px}
+.result-msg{font-size:0.95rem;line-height:1.7;margin-bottom:20px}
+/* ===== Category Select ===== */
+.cat-btn{
+  display:block;width:100%;text-align:left;
+  padding:14px 16px;background:var(--bg-card);border-radius:var(--radius);
+  margin-bottom:8px;box-shadow:var(--shadow);border:1.5px solid var(--border);
+  font-size:0.88rem;font-weight:500;transition:all var(--transition);
+}
+.cat-btn:active,.cat-btn.selected{border-color:var(--accent);background:var(--accent-subtle)}
+.cat-btn .cat-count{font-size:0.75rem;color:var(--text-light);margin-left:8px}
+.choice-btn.correct .choice-num::after{content:'\2713';position:absolute;font-size:0.6rem}
+.choice-btn.wrong .choice-num::after{content:'\2717';position:absolute;font-size:0.6rem}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+</style>
+</head>
+<body>
+
+<!-- ===== Bottom Navigation ===== -->
+<nav class="bottom-nav" aria-label="メインナビゲーション">
+  <button class="nav-btn active" data-screen="home" onclick="showScreen('home')" aria-label="ホーム">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    ホーム
+  </button>
+  <button class="nav-btn" data-screen="quiz-menu" onclick="showScreen('quiz-menu')" aria-label="クイズ">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    クイズ
+  </button>
+  <button class="nav-btn" data-screen="flash" onclick="showScreen('flash')" aria-label="暗記カード">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    暗記
+  </button>
+  <button class="nav-btn" data-screen="review" onclick="showScreen('review')" aria-label="復習">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    復習
+  </button>
+  <button class="nav-btn" data-screen="progress" onclick="showScreen('progress')" aria-label="学習記録">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    記録
+  </button>
+</nav>
+
+<main>
+<!-- ===== Home ===== -->
+<div id="home" class="screen active" role="region" aria-label="ホーム画面">
+  <div class="page-header">
+    <h1>SCO 学習アプリ</h1>
+    <p>シニア・コンプライアンス・オフィサー試験対策</p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">総学習回数</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-rate">0%</div><div class="stat-label">正答率</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">連続正解</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-review">0</div><div class="stat-label">要復習</div></div>
+  </div>
+  <button class="menu-item" onclick="showScreen('quiz-menu')">
+    <div class="menu-icon quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+    <div class="menu-text"><h3>クイズ</h3><p>5択問題で知識を確認</p></div>
+    <span class="menu-arrow">›</span>
+  </button>
+  <button class="menu-item" onclick="showScreen('flash')">
+    <div class="menu-icon flash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+    <div class="menu-text"><h3>フラッシュカード</h3><p>重要用語をカードで暗記</p></div>
+    <span class="menu-arrow">›</span>
+  </button>
+  <button class="menu-item" onclick="showScreen('review')">
+    <div class="menu-icon review"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+    <div class="menu-text"><h3>間違えた問題</h3><p id="review-count-home">復習すべき問題を確認</p></div>
+    <span class="menu-arrow">›</span>
+  </button>
+</div>
+
+<!-- ===== Quiz Menu ===== -->
+<div id="quiz-menu" class="screen" role="region" aria-label="カテゴリ選択画面">
+  <div class="page-header"><h1>カテゴリ選択</h1><p>学習したい分野を選んでください</p></div>
+  <div id="cat-list"></div>
+  <button class="cat-btn selected" onclick="selectCategory('all')" id="cat-all">すべて <span class="cat-count" id="cat-all-count"></span></button>
+  <div style="height:12px"></div>
+  <button class="start-btn" onclick="startQuiz()">クイズを開始（10問）</button>
+</div>
+
+<!-- ===== Quiz ===== -->
+<div id="quiz" class="screen" role="region" aria-label="クイズ画面">
+  <div class="quiz-progress">
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="q-progress"></div></div>
+    <span class="quiz-count" id="q-count">1/10</span>
+  </div>
+  <div id="quiz-body"></div>
+</div>
+
+<!-- ===== Quiz Result ===== -->
+<div id="quiz-result" class="screen" role="region" aria-label="クイズ結果画面">
+  <div class="card result-card">
+    <div class="result-score" id="res-score"></div>
+    <div class="result-label">正解数</div>
+    <div class="result-msg" id="res-msg"></div>
+    <button class="start-btn" onclick="showScreen('quiz-menu')" style="margin-bottom:10px">もう一度挑戦</button>
+    <button class="start-btn" onclick="showScreen('home')" style="background:var(--bg-card);color:var(--text);border:1.5px solid var(--border)">ホームに戻る</button>
+  </div>
+</div>
+
+<!-- ===== Flashcard ===== -->
+<div id="flash" class="screen" role="region" aria-label="フラッシュカード画面">
+  <div class="page-header"><h1>フラッシュカード</h1><p>タップしてカードをめくろう</p></div>
+  <div class="flash-counter" id="flash-count">1 / 1</div>
+  <div class="flashcard-container">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="flash-face flash-front">
+        <div class="flash-label">用語</div>
+        <div class="flash-term" id="flash-term" aria-live="polite"></div>
+        <div class="flash-hint">タップで解答を表示</div>
+      </div>
+      <div class="flash-face flash-back">
+        <div class="flash-label">解説</div>
+        <div class="flash-def" id="flash-def" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+  <div class="flash-nav">
+    <button class="flash-prev" onclick="flashNav(-1)">← 前</button>
+    <button class="flash-next" onclick="flashNav(1)">次 →</button>
+  </div>
+</div>
+
+<!-- ===== Review ===== -->
+<div id="review" class="screen" role="region" aria-label="復習画面">
+  <div class="page-header"><h1>間違えた問題</h1><p>復習して弱点を克服しよう</p></div>
+  <div id="review-list"></div>
+</div>
+
+<!-- ===== Progress ===== -->
+<div id="progress" class="screen" role="region" aria-label="学習記録画面">
+  <div class="page-header"><h1>学習記録</h1><p>これまでの成績を確認</p></div>
+  <div class="progress-ring-wrap">
+    <div class="progress-ring">
+      <svg viewBox="0 0 160 160"><circle class="bg" cx="80" cy="80" r="65"/><circle class="fg" id="prog-circle" cx="80" cy="80" r="65" stroke-dasharray="408.4" stroke-dashoffset="408.4"/></svg>
+      <div class="progress-center"><div class="progress-pct" id="prog-pct">0%</div><div class="progress-label">総合正答率</div></div>
+    </div>
+  </div>
+  <div class="section-title">最近のクイズ結果</div>
+  <div id="history-list"></div>
+  <div class="data-btn-group">
+    <button class="data-btn export" onclick="exportData()">学習データを保存</button>
+    <button class="data-btn import" onclick="importData()">学習データを読込</button>
+  </div>
+  <button class="reset-btn" onclick="resetData()">学習データをリセット</button>
+</div>
+</main>
+
+<script src="quizData.js"></script>
+<script src="flashData.js"></script>
+<script>
+// ===== State =====
+let state = JSON.parse(localStorage.getItem('sco_state')||'null') || {
+  totalQ:0, correctQ:0, streak:0, maxStreak:0,
+  wrongList:[], history:[], flashIdx:0
+};
+function saveState(){ localStorage.setItem('sco_state', JSON.stringify(state)); }
+
+let currentQuiz=[], quizIdx=0, quizCorrect=0, selectedCat='all';
+
+// ===== XSS Sanitization Helper =====
+function esc(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+// Helper: create DOM element with attributes and children
+function el(tag, attrs, ...children){
+  const e = document.createElement(tag);
+  if(attrs){
+    for(const [k,v] of Object.entries(attrs)){
+      if(k==='className') e.className=v;
+      else if(k==='onclick') e.addEventListener('click', v);
+      else if(k.startsWith('data-')) e.setAttribute(k,v);
+      else if(k==='style' && typeof v==='string') e.setAttribute('style',v);
+      else e[k]=v;
+    }
+  }
+  for(const c of children){
+    if(typeof c==='string') e.appendChild(document.createTextNode(c));
+    else if(c) e.appendChild(c);
+  }
+  return e;
+}
+
+// ===== Navigation =====
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.screen===id || 
+      (b.dataset.screen==='quiz-menu' && (id==='quiz'||id==='quiz-result')));
+  });
+  if(id==='home') updateHome();
+  if(id==='quiz-menu') buildCatMenu();
+  if(id==='flash') showFlashcard();
+  if(id==='review') showReview();
+  if(id==='progress') showProgress();
+  window.scrollTo(0,0);
+}
+
+// ===== Home =====
+function updateHome(){
+  document.getElementById('stat-total').textContent = state.totalQ;
+  const rate = state.totalQ ? Math.round(state.correctQ/state.totalQ*100) : 0;
+  document.getElementById('stat-rate').textContent = rate+'%';
+  document.getElementById('stat-streak').textContent = state.streak;
+  document.getElementById('stat-review').textContent = state.wrongList.length;
+  const rc = state.wrongList.length;
+  document.getElementById('review-count-home').textContent = rc ? `${rc}問の復習待ち` : '復習すべき問題を確認';
+}
+
+// ===== Category Menu =====
+function buildCatMenu(){
+  const cats = [...new Set(quizData.map(q=>q.cat))];
+  const list = document.getElementById('cat-list');
+  list.textContent = '';
+  cats.forEach(c=>{
+    const cnt = quizData.filter(q=>q.cat===c).length;
+    const btn = el('button',{className:'cat-btn'+(selectedCat===c?' selected':''),onclick:()=>selectCategory(c)},
+      c+' ',
+      el('span',{className:'cat-count'}, cnt+'問')
+    );
+    list.appendChild(btn);
+  });
+  document.getElementById('cat-all-count').textContent = quizData.length+'問';
+  document.getElementById('cat-all').className = 'cat-btn'+(selectedCat==='all'?' selected':'');
+}
+function selectCategory(cat){
+  selectedCat=cat;
+  buildCatMenu();
+}
+
+// ===== Quiz =====
+function startQuiz(){
+  let pool = selectedCat==='all' ? [...quizData] : quizData.filter(q=>q.cat===selectedCat);
+  // Shuffle & pick 10 (or less)
+  for(let i=pool.length-1;i>0;i--){const j=Math.random()*i|0;[pool[i],pool[j]]=[pool[j],pool[i]];}
+  currentQuiz = pool.slice(0, Math.min(10, pool.length));
+  quizIdx=0; quizCorrect=0;
+  showScreen('quiz');
+  renderQuestion();
+}
+function renderQuestion(){
+  const q = currentQuiz[quizIdx];
+  const total = currentQuiz.length;
+  document.getElementById('q-progress').style.width = ((quizIdx)/total*100)+'%';
+  document.getElementById('q-count').textContent = `${quizIdx+1}/${total}`;
+  const labels = ['ア','イ','ウ','エ','オ'];
+  const body = document.getElementById('quiz-body');
+  body.textContent = '';
+  // Question card
+  const qCard = el('div',{className:'question-card'},
+    el('div',{className:'q-category'}, q.cat),
+    el('div',{className:'q-text'}, q.q)
+  );
+  body.appendChild(qCard);
+  // Choices
+  const choicesDiv = el('div',{className:'choices'});
+  q.choices.forEach((c,i)=>{
+    const btn = el('button',{className:'choice-btn', onclick:()=>answerQuiz(i)},
+      el('span',{className:'choice-num'}, labels[i]),
+      el('span',{}, c)
+    );
+    choicesDiv.appendChild(btn);
+  });
+  body.appendChild(choicesDiv);
+  // Placeholders for explain & next
+  body.appendChild(el('div',{id:'q-explain'}));
+  body.appendChild(el('div',{id:'q-next'}));
+}
+function answerQuiz(idx){
+  const q = currentQuiz[quizIdx];
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach((b,i)=>{
+    b.classList.add('disabled');
+    if(i===q.answer) b.classList.add('correct');
+    if(i===idx && idx!==q.answer) b.classList.add('wrong');
+  });
+  const isCorrect = idx===q.answer;
+  state.totalQ++;
+  if(isCorrect){
+    state.correctQ++;
+    state.streak++;
+    if(state.streak>state.maxStreak) state.maxStreak=state.streak;
+    quizCorrect++;
+    // Increment correctCount instead of immediate removal (spaced repetition)
+    const wrongItem = state.wrongList.find(w=>w.id===q.id);
+    if(wrongItem){
+      wrongItem.correctCount = (wrongItem.correctCount || 0) + 1;
+      // Remove only after 3 correct answers
+      if(wrongItem.correctCount >= 3){
+        state.wrongList = state.wrongList.filter(w=>w.id!==q.id);
+      }
+    }
+  } else {
+    state.streak=0;
+    const existing = state.wrongList.find(w=>w.id===q.id);
+    if(existing){
+      existing.correctCount = 0; // Reset progress on wrong answer
+      existing.wrong = q.choices[idx]; // Update the wrong answer
+    } else {
+      state.wrongList.push({id:q.id, q:q.q, correct:q.choices[q.answer], wrong:q.choices[idx], cat:q.cat, correctCount:0});
+    }
+  }
+  saveState();
+  const explainEl = document.getElementById('q-explain');
+  explainEl.textContent = '';
+  const explDiv = el('div',{className:'explanation'});
+  explDiv.appendChild(el('strong',{}, isCorrect?'✓ 正解！':'✗ 不正解'));
+  explDiv.appendChild(el('br',{}));
+  explDiv.appendChild(document.createTextNode(q.explain));
+  explainEl.appendChild(explDiv);
+  const isLast = quizIdx >= currentQuiz.length-1;
+  const nextEl = document.getElementById('q-next');
+  nextEl.textContent = '';
+  nextEl.appendChild(
+    el('button',{className:'next-btn', onclick:isLast?showResult:nextQuestion},
+      isLast?'結果を見る':'次の問題 →')
+  );
+}
+function nextQuestion(){ quizIdx++; renderQuestion(); window.scrollTo(0,0); }
+function showResult(){
+  const total = currentQuiz.length;
+  state.history.unshift({date:new Date().toLocaleDateString('ja-JP'),score:quizCorrect,total:total});
+  if(state.history.length>20) state.history.length=20;
+  saveState();
+  document.getElementById('res-score').textContent = `${quizCorrect} / ${total}`;
+  const pct = Math.round(quizCorrect/total*100);
+  let msg = pct>=80?'素晴らしい！この調子で頑張りましょう。':pct>=60?'合格ラインです。間違えた問題を復習しましょう。':'もう少し頑張りましょう。復習機能を活用してください。';
+  document.getElementById('res-msg').textContent = msg;
+  showScreen('quiz-result');
+}
+
+// ===== Flashcard =====
+function showFlashcard(){
+  if(state.flashIdx >= flashData.length) state.flashIdx=0;
+  const f = flashData[state.flashIdx];
+  document.getElementById('flash-term').textContent = f.term;
+  document.getElementById('flash-def').textContent = f.def;
+  document.getElementById('flash-count').textContent = `${state.flashIdx+1} / ${flashData.length}`;
+  document.getElementById('flashcard').classList.remove('flipped');
+}
+function flipCard(){ document.getElementById('flashcard').classList.toggle('flipped'); }
+function flashNav(dir){
+  state.flashIdx += dir;
+  if(state.flashIdx<0) state.flashIdx=flashData.length-1;
+  if(state.flashIdx>=flashData.length) state.flashIdx=0;
+  saveState();
+  showFlashcard();
+}
+
+// ===== Review =====
+function showReview(){
+  const list = document.getElementById('review-list');
+  list.textContent = '';
+  if(!state.wrongList.length){
+    const emptyDiv = el('div',{className:'empty-state'});
+    // Build SVG via namespace-aware API
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','0 0 24 24');
+    svg.setAttribute('fill','none');
+    svg.setAttribute('stroke','currentColor');
+    svg.setAttribute('stroke-width','1.5');
+    const path = document.createElementNS(svgNS,'path');
+    path.setAttribute('d','M22 11.08V12a10 10 0 11-5.93-9.14');
+    const polyline = document.createElementNS(svgNS,'polyline');
+    polyline.setAttribute('points','22 4 12 14.01 9 11.01');
+    svg.appendChild(path);
+    svg.appendChild(polyline);
+    emptyDiv.appendChild(svg);
+    emptyDiv.appendChild(el('h3',{},'間違えた問題はありません'));
+    emptyDiv.appendChild(el('p',{},'クイズで間違えた問題がここに表示されます。'));
+    list.appendChild(emptyDiv);
+    return;
+  }
+  list.appendChild(el('p',{style:'font-size:0.82rem;color:var(--text-light);margin-bottom:4px'}, state.wrongList.length+'問の復習待ち'));
+  list.appendChild(el('p',{style:'font-size:0.72rem;color:var(--text-light);margin-bottom:12px'}, '3回連続正解で復習リストから削除されます'));
+  state.wrongList.forEach(w=>{
+    const cc = w.correctCount || 0;
+    const dots = Array.from({length:3},(_,i)=> i < cc ? '\u25CF' : '\u25CB').join('');
+    const progressText = '復習進捗: ' + dots + ' (' + cc + '/3正解)';
+    list.appendChild(el('div',{className:'review-item'},
+      el('div',{className:'q',style:'font-weight:500;margin-bottom:8px'}, w.q.substring(0,80)+'…'),
+      el('div',{className:'wrong-a'}, '✗ あなたの回答: '+w.wrong),
+      el('div',{className:'a'}, '✓ 正解: '+w.correct),
+      el('div',{className:'review-mastery'}, progressText)
+    ));
+  });
+  list.appendChild(el('button',{className:'start-btn',style:'margin-top:12px',onclick:startReviewQuiz},'間違えた問題でクイズ'));
+}
+function startReviewQuiz(){
+  if(!state.wrongList.length) return;
+  // Find matching questions
+  let pool = state.wrongList.map(w=>quizData.find(q=>q.id===w.id)).filter(Boolean);
+  for(let i=pool.length-1;i>0;i--){const j=Math.random()*i|0;[pool[i],pool[j]]=[pool[j],pool[i]];}
+  currentQuiz = pool.slice(0,10);
+  quizIdx=0; quizCorrect=0;
+  showScreen('quiz');
+  renderQuestion();
+}
+
+// ===== Progress =====
+function showProgress(){
+  const rate = state.totalQ ? Math.round(state.correctQ/state.totalQ*100) : 0;
+  const circ = 2*Math.PI*65;
+  const offset = circ - (circ*rate/100);
+  document.getElementById('prog-circle').style.strokeDashoffset = offset;
+  document.getElementById('prog-pct').textContent = rate+'%';
+  const hl = document.getElementById('history-list');
+  hl.textContent = '';
+  if(!state.history.length){
+    hl.appendChild(el('p',{style:'font-size:0.82rem;color:var(--text-light);text-align:center;padding:20px'},'まだクイズの記録がありません'));
+  } else {
+    state.history.forEach(h=>{
+      hl.appendChild(el('div',{className:'history-item'},
+        el('span',{className:'history-date'}, h.date),
+        el('span',{className:'history-score'}, h.score+'/'+h.total+'（'+Math.round(h.score/h.total*100)+'%）')
+      ));
+    });
+  }
+}
+// ===== Export / Import =====
+function exportData(){
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sco_study_data_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importData(){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = function(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      try {
+        const imported = JSON.parse(ev.target.result);
+        // Validate structure
+        if(typeof imported.totalQ !== 'number' || typeof imported.correctQ !== 'number' ||
+           !Array.isArray(imported.wrongList) || !Array.isArray(imported.history)){
+          alert('無効なデータ形式です。');
+          return;
+        }
+        if(!confirm('現在の学習データを上書きしますか？')) return;
+        state = imported;
+        saveState();
+        showProgress();
+        alert('学習データを読み込みました。');
+      } catch(err){
+        alert('ファイルの読み込みに失敗しました。');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function resetData(){
+  if(!confirm('学習データをすべてリセットしますか？')) return;
+  state = {totalQ:0,correctQ:0,streak:0,maxStreak:0,wrongList:[],history:[],flashIdx:0};
+  saveState();
+  showProgress();
+}
+
+// ===== Init =====
+updateHome();
+
+// ===== Service Worker Registration =====
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

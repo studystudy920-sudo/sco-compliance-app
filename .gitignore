@@ -1,0 +1,10 @@
+# PDFs (large study materials)
+*.pdf
+
+# Zip archives
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,21 @@
+{
+  "name": "SCO学習アプリ",
+  "short_name": "SCO学習",
+  "description": "シニア・コンプライアンス・オフィサー試験対策",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f6f3",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait",
+  "lang": "ja",
+  "dir": "ltr",
+  "categories": ["education"],
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
