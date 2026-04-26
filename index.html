@@ -279,6 +279,16 @@ main{
 }
 .cat-btn:active,.cat-btn.selected{border-color:var(--accent);background:var(--accent-subtle)}
 .cat-btn .cat-count{font-size:0.75rem;color:var(--text-light);margin-left:8px}
+/* ===== Chapter Filter ===== */
+.ch-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.ch-tab{
+  flex:1;min-width:60px;padding:10px 8px;background:var(--bg-card);
+  border:1.5px solid var(--border);border-radius:var(--radius);
+  font-size:0.78rem;font-weight:600;color:var(--text);
+  transition:all var(--transition);text-align:center;
+}
+.ch-tab:active,.ch-tab.selected{border-color:var(--accent);background:var(--accent);color:#fff}
+.ch-tab .ch-count{display:block;font-size:0.65rem;font-weight:400;margin-top:2px;opacity:0.85}
 .choice-btn.correct .choice-num::after{content:'\2713';position:absolute;font-size:0.6rem}
 .choice-btn.wrong .choice-num::after{content:'\2717';position:absolute;font-size:0.6rem}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
@@ -342,9 +352,10 @@ main{
 
 <!-- ===== Quiz Menu ===== -->
 <div id="quiz-menu" class="screen" role="region" aria-label="カテゴリ選択画面">
-  <div class="page-header"><h1>カテゴリ選択</h1><p>学習したい分野を選んでください</p></div>
-  <div id="cat-list"></div>
+  <div class="page-header"><h1>章・カテゴリ選択</h1><p>学習したい章とカテゴリを選んでください</p></div>
+  <div class="ch-tabs" id="ch-tabs"></div>
   <button class="cat-btn selected" onclick="selectCategory('all')" id="cat-all">すべて <span class="cat-count" id="cat-all-count"></span></button>
+  <div id="cat-list"></div>
   <div style="height:12px"></div>
   <button class="start-btn" onclick="startQuiz()">クイズを開始（10問）</button>
 </div>
@@ -427,7 +438,7 @@ let state = JSON.parse(localStorage.getItem('sco_state')||'null') || {
 };
 function saveState(){ localStorage.setItem('sco_state', JSON.stringify(state)); }
 
-let currentQuiz=[], quizIdx=0, quizCorrect=0, selectedCat='all';
+let currentQuiz=[], quizIdx=0, quizCorrect=0, selectedCat='all', selectedCh='all';
 
 // ===== XSS Sanitization Helper =====
 function esc(s){
@@ -463,7 +474,7 @@ function showScreen(id){
       (b.dataset.screen==='quiz-menu' && (id==='quiz'||id==='quiz-result')));
   });
   if(id==='home') updateHome();
-  if(id==='quiz-menu') buildCatMenu();
+  if(id==='quiz-menu'){ buildChTabs(); buildCatMenu(); }
   if(id==='flash') showFlashcard();
   if(id==='review') showReview();
   if(id==='progress') showProgress();
@@ -482,21 +493,58 @@ function updateHome(){
 }
 
 // ===== Category Menu =====
+const CH_LABELS = {1:'第1章', 2:'第2章', 3:'第3章', 4:'第4章'};
+
+function buildChTabs(){
+  const tabs = document.getElementById('ch-tabs');
+  tabs.textContent = '';
+  // 全章
+  const allBtn = el('button',{
+    className:'ch-tab'+(selectedCh==='all'?' selected':''),
+    onclick:()=>selectChapter('all')
+  }, '全章', el('span',{className:'ch-count'}, quizData.length+'問'));
+  tabs.appendChild(allBtn);
+  // 第1〜4章
+  for(const ch of [1,2,3,4]){
+    const cnt = quizData.filter(q=>q.ch===ch).length;
+    const btn = el('button',{
+      className:'ch-tab'+(selectedCh===ch?' selected':''),
+      onclick:()=>selectChapter(ch)
+    }, CH_LABELS[ch], el('span',{className:'ch-count'}, cnt+'問'));
+    tabs.appendChild(btn);
+  }
+}
+
+function poolForCh(){
+  return selectedCh==='all' ? quizData : quizData.filter(q=>q.ch===selectedCh);
+}
+
 function buildCatMenu(){
-  const cats = [...new Set(quizData.map(q=>q.cat))];
+  const pool = poolForCh();
+  const cats = [...new Set(pool.map(q=>q.cat))];
   const list = document.getElementById('cat-list');
   list.textContent = '';
   cats.forEach(c=>{
-    const cnt = quizData.filter(q=>q.cat===c).length;
+    const cnt = pool.filter(q=>q.cat===c).length;
     const btn = el('button',{className:'cat-btn'+(selectedCat===c?' selected':''),onclick:()=>selectCategory(c)},
       c+' ',
       el('span',{className:'cat-count'}, cnt+'問')
     );
     list.appendChild(btn);
   });
-  document.getElementById('cat-all-count').textContent = quizData.length+'問';
+  const allLabel = selectedCh==='all' ? 'すべて' : CH_LABELS[selectedCh]+'のすべて';
+  document.getElementById('cat-all').firstChild.textContent = allLabel+' ';
+  document.getElementById('cat-all-count').textContent = pool.length+'問';
   document.getElementById('cat-all').className = 'cat-btn'+(selectedCat==='all'?' selected':'');
 }
+
+function selectChapter(ch){
+  selectedCh = ch;
+  selectedCat = 'all';  // 章を切り替えたらカテゴリは「すべて」にリセット
+  buildChTabs();
+  buildCatMenu();
+}
+
 function selectCategory(cat){
   selectedCat=cat;
   buildCatMenu();
@@ -504,7 +552,9 @@ function selectCategory(cat){
 
 // ===== Quiz =====
 function startQuiz(){
-  let pool = selectedCat==='all' ? [...quizData] : quizData.filter(q=>q.cat===selectedCat);
+  let pool = poolForCh();
+  if(selectedCat!=='all') pool = pool.filter(q=>q.cat===selectedCat);
+  pool = [...pool];
   // Shuffle & pick 10 (or less)
   for(let i=pool.length-1;i>0;i--){const j=Math.random()*i|0;[pool[i],pool[j]]=[pool[j],pool[i]];}
   currentQuiz = pool.slice(0, Math.min(10, pool.length));
