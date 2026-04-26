@@ -351,13 +351,11 @@ main{
 </div>
 
 <!-- ===== Quiz Menu ===== -->
-<div id="quiz-menu" class="screen" role="region" aria-label="カテゴリ選択画面">
-  <div class="page-header"><h1>章・カテゴリ選択</h1><p>学習したい章とカテゴリを選んでください</p></div>
+<div id="quiz-menu" class="screen" role="region" aria-label="章・カテゴリ選択画面">
+  <div class="page-header"><h1>章・カテゴリ選択</h1><p>タップで即クイズ開始（最大10問ランダム出題）</p></div>
   <div class="ch-tabs" id="ch-tabs"></div>
-  <button class="cat-btn selected" onclick="selectCategory('all')" id="cat-all">すべて <span class="cat-count" id="cat-all-count"></span></button>
+  <button class="cat-btn" onclick="startQuizFor('all')" id="cat-all">すべて <span class="cat-count" id="cat-all-count"></span></button>
   <div id="cat-list"></div>
-  <div style="height:12px"></div>
-  <button class="start-btn" onclick="startQuiz()">クイズを開始（10問）</button>
 </div>
 
 <!-- ===== Quiz ===== -->
@@ -526,7 +524,7 @@ function buildCatMenu(){
   list.textContent = '';
   cats.forEach(c=>{
     const cnt = pool.filter(q=>q.cat===c).length;
-    const btn = el('button',{className:'cat-btn'+(selectedCat===c?' selected':''),onclick:()=>selectCategory(c)},
+    const btn = el('button',{className:'cat-btn',onclick:()=>startQuizFor(c)},
       c+' ',
       el('span',{className:'cat-count'}, cnt+'問')
     );
@@ -535,19 +533,22 @@ function buildCatMenu(){
   const allLabel = selectedCh==='all' ? 'すべて' : CH_LABELS[selectedCh]+'のすべて';
   document.getElementById('cat-all').firstChild.textContent = allLabel+' ';
   document.getElementById('cat-all-count').textContent = pool.length+'問';
-  document.getElementById('cat-all').className = 'cat-btn'+(selectedCat==='all'?' selected':'');
 }
 
 function selectChapter(ch){
   selectedCh = ch;
-  selectedCat = 'all';  // 章を切り替えたらカテゴリは「すべて」にリセット
+  selectedCat = 'all';
   buildChTabs();
   buildCatMenu();
 }
 
-function selectCategory(cat){
-  selectedCat=cat;
-  buildCatMenu();
+// 互換: 旧コード呼び出しでも壊れないように残す
+function selectCategory(cat){ selectedCat = cat; }
+
+// カテゴリタップで即クイズ開始
+function startQuizFor(cat){
+  selectedCat = cat;
+  startQuiz();
 }
 
 // ===== Quiz =====
